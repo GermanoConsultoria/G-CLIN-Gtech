@@ -1,0 +1,116 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-foreground: var(--whatsapp-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* Fundos — cinza-frio neutro como base */
+  --background:          #F3F4F5;
+  --card:                #FFFFFF;
+  --popover:             #FFFFFF;
+
+  /* Texto — contraste alto */
+  --foreground:          #14171A;
+  --card-foreground:     #14171A;
+  --popover-foreground:  #14171A;
+
+  /* Primária — rosé escuro (contraste 7:1) */
+  --primary:             #3A577A;
+  --primary-foreground:  #FFFFFF;
+
+  /* Secundária */
+  --secondary:           #E2EAF3;
+  --secondary-foreground:#32455C;
+
+  /* Muted */
+  --muted:               #E3E5E8;
+  --muted-foreground:    #727C88;
+
+  /* Accent — rosé claro decorativo */
+  --accent:              #E2EAF3;
+  --accent-foreground:   #364E6B;
+
+  /* Bordas e inputs */
+  --border:              #E3E5E8;
+  --input:               #E2EAF3;
+  --ring:                #A0B6D0;
+
+  /* Status */
+  --destructive:         #C0392B;
+  --destructive-foreground: #FFFFFF;
+  --success:             #1F6B42;
+  --success-foreground:  #FFFFFF;
+  --warning:             #8A5900;
+  --warning-foreground:  #FFFFFF;
+  --whatsapp:            #25D366;
+  --whatsapp-foreground: #FFFFFF;
+
+  /* Decorativo */
+  --gradient-hero: linear-gradient(135deg, #3A577A 0%, #A0B6D0 50%, #E2EAF3 100%);
+  --shadow-soft: 0 4px 24px rgba(58, 87, 122, 0.18);
+  --gold-mid:            #A0B6D0;
+  --shadow-card:   0 1px 4px rgba(0,0,0,0.07);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #C7D5E7;
+    border-radius: 999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #A0B6D0;
+  }
+}

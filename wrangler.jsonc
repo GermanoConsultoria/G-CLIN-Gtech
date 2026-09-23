@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "g-clin-gtech",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "dist/server/server.js",
+  "assets": {
+    "directory": "./dist/client"
+  },
+  // Preencha com os valores do projeto Supabase Cloud do G-Tech quando for fazer o deploy.
+  // NAO reaproveitar as credenciais do projeto "g-clin-maria" (apontariam para o
+  // banco de producao de outra clinica). Nao use aqui as chaves de local dev (.env) —
+  // configure via `wrangler secret put` para valores sensiveis, e `vars` abaixo
+  // apenas para os publicos (URL, anon key).
+  "vars": {
+    "SUPABASE_URL": "",
+    "SUPABASE_PUBLISHABLE_KEY": "",
+    "VITE_SUPABASE_URL": "",
+    "VITE_SUPABASE_PUBLISHABLE_KEY": "",
+    "VITE_CLINIC_USER_ID": ""
+  }
+}

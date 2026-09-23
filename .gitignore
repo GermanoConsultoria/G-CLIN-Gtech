@@ -1,0 +1,47 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+.output
+.vinxi
+.tanstack/**
+.nitro
+*.local
+dist
+
+# Environment variables (contain secrets — never commit)
+.env
+.env.*
+!.env.example
+# .env.production só tem valores públicos (URL/anon key protegidos por RLS,
+# já expostos no bundle do navegador) — precisa estar versionado para o
+# Cloudflare Workers Builds conseguir embutir VITE_* no build automático.
+!.env.production
+
+# Supabase CLI local state
+supabase/.temp
+supabase/.branches
+
+
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
