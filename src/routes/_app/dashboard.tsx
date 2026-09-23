@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, addMonths, subMonths, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Plus, MessageCircle, Trash2, Pencil, Calendar as CalendarIcon, Phone, Zap, AlertTriangle, CheckCircle2, XCircle, Clock, List, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Pencil, Calendar as CalendarIcon, Phone, Zap, AlertTriangle, CheckCircle2, XCircle, Clock, List, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -101,37 +100,6 @@ function getAvailableSlots(
   });
 }
 
-function buildWhatsappMsg(kind: "agendamento" | "confirmacao" | "lembrete" | "reagendamento" | "antecipar", opts: {
-  clientName: string;
-  scheduledAt: Date;
-  serviceName?: string | null;
-  newSlot?: Date;
-}): string {
-  const when = format(opts.scheduledAt, "EEEE, dd 'de' MMMM 'às' HH:mm", { locale: ptBR });
-  const servico = opts.serviceName ? ` — *${opts.serviceName}*` : "";
-  const regras = "\n\n⚠️ *Lembretes importantes:*\n• Em caso de falta ou cancelamento com menos de 24h, o próximo atendimento terá custo adicional\n\nG-Tech 💛";
-  switch (kind) {
-    case "agendamento":
-      return `Olá, ${opts.clientName}! 👋\n\nSeu agendamento${servico} com a *G-Tech* foi confirmado para *${when}*. 🎉${regras}\n\nQualquer dúvida, é só responder esta mensagem!`;
-    case "confirmacao":
-      return `Olá, ${opts.clientName}! 😊\n\nA *G-Tech* está passando para confirmar seu procedimento${servico} *amanhã*, *${when}*.\n\nPor favor, confirme respondendo *SIM* ✅ ou *NÃO* ❌.${regras}`;
-    case "lembrete":
-      return `Olá, ${opts.clientName}! ⏰\n\nSeu procedimento${servico} com a *G-Tech* começa em *10 minutos* — *${when}*.\n\nEstamos te esperando! 💛`;
-    case "reagendamento":
-      return `Olá, ${opts.clientName}! Precisamos *reagendar* seu procedimento${servico} que estava marcado para ${when}.\n\nPor favor, entre em contato para escolher um novo horário. 📅`;
-    case "antecipar": {
-      const novo = opts.newSlot ? format(opts.newSlot, "EEEE, dd 'de' MMMM 'às' HH:mm", { locale: ptBR }) : when;
-      return `Olá, ${opts.clientName}! 🎉 Surgiu uma *vaga antecipada* para *${novo}*.\n\nVocê manifestou interesse em antecipar. Se quiser este horário, responda *SIM* o quanto antes — vai para quem responder primeiro!`;
-    }
-  }
-}
-
-function whatsappLink(phone: string, message: string): string {
-  const digits = phone.replace(/\D/g, "");
-  const full = digits.length <= 11 ? `55${digits}` : digits;
-  return `https://wa.me/${full}?text=${encodeURIComponent(message)}`;
-}
-
 function Dashboard() {
   const { user } = useAuth();
   const [appts, setAppts] = useState<Appointment[]>([]);
@@ -185,15 +153,6 @@ function Dashboard() {
     if (error) return toast.error(error.message);
     toast.success("Agendamento removido");
     load();
-  };
-
-  const sendWhats = (a: Appointment, kind: "agendamento" | "confirmacao" | "lembrete" | "reagendamento") => {
-    const msg = buildWhatsappMsg(kind, {
-      clientName: a.client_name,
-      scheduledAt: new Date(a.scheduled_at),
-      serviceName: a.service_name,
-    });
-    window.open(whatsappLink(a.phone, msg), "_blank");
   };
 
   const updateStatus = async (a: Appointment, status: Appointment["status"]) => {
@@ -387,19 +346,6 @@ function Dashboard() {
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="sm" className="bg-whatsapp text-whatsapp-foreground hover:bg-whatsapp/90">
-                              <MessageCircle className="h-4 w-4" /> WhatsApp
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => sendWhats(a, "agendamento")}>✅ Confirmação de agendamento</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => sendWhats(a, "confirmacao")}>🔔 Lembrete 24h antes</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => sendWhats(a, "lembrete")}>⏰ Lembrete 10 minutos antes</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => sendWhats(a, "reagendamento")}>🔄 Reagendar</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                         <Select value={a.status} onValueChange={(v) => updateStatus(a, v as Appointment["status"])}>
                           <SelectTrigger className="h-9 w-44"><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -742,17 +688,6 @@ function AnticipateDialog({ appts, canceled, onClose }: { appts: Appointment[]; 
     );
   }, [appts, canceled]);
 
-  const send = (c: Appointment) => {
-    if (!canceled) return;
-    const msg = buildWhatsappMsg("antecipar", {
-      clientName: c.client_name,
-      scheduledAt: new Date(c.scheduled_at),
-      serviceName: c.service_name,
-      newSlot: new Date(canceled.scheduled_at),
-    });
-    window.open(whatsappLink(c.phone, msg), "_blank");
-  };
-
   return (
     <Dialog open={!!canceled} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-lg">
@@ -779,9 +714,6 @@ function AnticipateDialog({ appts, canceled, onClose }: { appts: Appointment[]; 
                     Atual: {format(new Date(c.scheduled_at), "dd/MM HH:mm", { locale: ptBR })} · {c.phone}
                   </div>
                 </div>
-                <Button size="sm" className="bg-whatsapp text-whatsapp-foreground hover:bg-whatsapp/90" onClick={() => send(c)}>
-                  <MessageCircle className="h-4 w-4" /> Oferecer
-                </Button>
               </div>
             ))}
           </div>

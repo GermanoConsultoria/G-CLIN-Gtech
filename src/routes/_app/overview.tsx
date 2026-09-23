@@ -7,7 +7,7 @@ import {
 import { ptBR } from "date-fns/locale";
 import {
   AlertCircle, Calendar, CheckCircle2, XCircle, Clock,
-  TrendingUp, TrendingDown, DollarSign, MessageCircle, BellRing,
+  TrendingUp, TrendingDown, DollarSign, BellRing,
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -15,7 +15,6 @@ import {
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { buildMessage, whatsappLink } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/_app/overview")({ component: Overview });
 
@@ -326,7 +325,7 @@ function Overview() {
           label="Aguardando confirmação"
           value={todayStats.aguardando}
           tone="warning"
-          sub={todayStats.aguardando > 0 ? "Enviar lembrete pelo WhatsApp" : "Todos responderam"}
+          sub={todayStats.aguardando > 0 ? "Confirme com o paciente" : "Todos responderam"}
         />
         <KpiCard
           icon={XCircle}
@@ -345,13 +344,6 @@ function Overview() {
             {proximosHoje.map((a) => {
               const cfg = statusConfig[a.status];
               const hora = format(parseISO(a.scheduled_at), "HH:mm");
-              const msg = buildMessage({
-                kind: "confirmacao",
-                patientName: a.client_name,
-                scheduledAt: parseISO(a.scheduled_at),
-                type: a.type === "retorno" ? "retorno" : "consulta",
-              });
-              const link = whatsappLink(a.phone, msg);
 
               return (
                 <div
@@ -368,17 +360,6 @@ function Overview() {
                   <span className={`hidden sm:inline-flex text-xs px-2.5 py-0.5 rounded-full border font-medium shrink-0 ${cfg.cls}`}>
                     {cfg.label}
                   </span>
-                  {a.status === "agendado" && (
-                    <a
-                      href={link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0 flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 transition-opacity"
-                    >
-                      <MessageCircle className="h-3.5 w-3.5" />
-                      Lembrete
-                    </a>
-                  )}
                 </div>
               );
             })}
